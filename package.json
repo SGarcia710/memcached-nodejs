@@ -1,0 +1,16 @@
+{
+  "name": "memcached-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "parser": "node src/utils/parser.js"
+  },
+  "author": "Sebastián García - @SGarcia710",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "8.2.0",
+    "ms": "^2.1.2"
+  }
+}
