@@ -27,13 +27,9 @@ class TCPServer extends Server {
       socket.on('data', (chunk) => {
         try {
           const parsedObject = this.parser.parseInput(chunk);
-          if (parsedObject) {
-            console.log(
-              `Data received from client: ${JSON.stringify(parsedObject)}`
-            );
-          } else {
-            console.log('Invalid data');
-          }
+          console.log(
+            `Data received from client: ${JSON.stringify(parsedObject)}`
+          );
         } catch (error) {
           socket.write(error.message);
         }
