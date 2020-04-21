@@ -21,6 +21,10 @@ const DEFAULT_MAX_TTL = '30d';
 const DEFAULT_PURGE_INTERVAL = '10d';
 const DEFAULT_ENTRIES_LIMIT = 100;
 
+// Memcache errors strings
+const INVALID_COMMAND = 'ERROR\r\n';
+const server_error = (error) => `SERVER_ERROR ${error}\r\n`;
+
 module.exports = {
   PORT,
   KEY_LENGHT,
@@ -28,4 +32,6 @@ module.exports = {
   DEFAULT_MAX_TTL,
   DEFAULT_PURGE_INTERVAL,
   DEFAULT_ENTRIES_LIMIT,
+  INVALID_COMMAND,
+  server_error,
 };

@@ -37,10 +37,19 @@ class LRU {
         : null;
   }
 
+  /**
+   * Returns the actual date in ms
+   * @returns {integer} actual date in ms
+   */
   now() {
     return Date.now();
   }
 
+  /**
+   * Returns the given time to live in ms
+   * @param {integer|string} ttl the time to live for the element to save in ms or using ms library syntax
+   * @returns {integer} actual date in ms
+   */
   ms(ttl) {
     switch (typeof ttl) {
       case 'string':
@@ -55,11 +64,28 @@ class LRU {
     return ttl > 0 ? ttl : this.maxTTL;
   }
 
-  // This function checks if the given key its expired or not
+  /**
+   * Checks if the cache has the given key and its valid
+   * @param {string} key The supposed item's key
+   * @returns {boolean} True if this item exists and its valid or false if its not
+   */
+  has(key) {
+    return this.cache.has(key) && this.expires.get(key) > this.now();
+  }
+
+  /**
+   * Checks if the given key its expired or not
+   * @param {string} key The supposed item's key
+   * @returns {boolean} True if this item its valid or false if its not
+   */
   check(key) {
     return this.expires.get(key) > this.now();
   }
 
+  /**
+   * Purges the expired keys in the cache
+   * @returns {Array} Array containing the purged keys
+   */
   purgeExpiredEntries() {
     const now = this.now();
     let keys = new Set();
@@ -81,7 +107,11 @@ class LRU {
     return keys;
   }
 
-  // Get entry from cache map and update with that entry the head of the Doubly LinkedList
+  /**
+   * Gets entry from cache map and update with that entry the head of the Doubly LinkedList
+   * @param {string} key supposed key to fetch
+   * @returns {object|integer} object with the item's value or -1 if it doesnt exist or its expired on the cache
+   */
   getEntry(key) {
     if (this.cache.has(key) && this.check(key)) {
       const entry = this.cache.get(key);
@@ -90,7 +120,6 @@ class LRU {
       // Move entry to the head of Doubly LinkedList to make it MRU
       this.addEntryToTop(entry);
 
-      // return entry.value;
       return entry.value;
     }
 
@@ -98,6 +127,12 @@ class LRU {
     return -1;
   }
 
+  /**
+   * Add a new entry to the cache
+   * @param {string} key entry's key
+   * @param {any} value entry's value
+   * @param {string} entryTTL entry's time to live
+   */
   addEntry(key, value, entryTTL) {
     if (this.cache.has(key)) {
       // If they key already exist, just update the value and move it to top
@@ -128,7 +163,10 @@ class LRU {
     );
   }
 
-  // Add Entry to head of Doubly LinkedList
+  /**
+   * Add Entry to head of Doubly LinkedList
+   * @param {Object} entry entry object to save
+   */
   addEntryToTop(entry) {
     entry.right = this.start;
     entry.left = null;
@@ -141,7 +179,10 @@ class LRU {
     }
   }
 
-  // Remove Entry from the Doubly LinkedList
+  /**
+   * Remove Entry from the Doubly LinkedList
+   * @param {Object} entry entry object to remove
+   */
   removeEntry(entry) {
     if (entry.left !== null) {
       entry.left.right = entry.right;
@@ -156,6 +197,9 @@ class LRU {
     }
   }
 
+  /**
+   * Resets the cache
+   */
   clearCache() {
     this.start = null;
     this.end = null;
@@ -163,7 +207,11 @@ class LRU {
     this.expires.clear();
   }
 
-  // Invokes the callback function with every entry of the chain and the index of the entry.
+  /**
+   * TODO
+   * Invokes the callback function with each element on the cache
+   * @param {Function} callback to excecute
+   */
   forEach(callback) {
     let entry = this.start;
     let counter = 0;
@@ -174,7 +222,9 @@ class LRU {
     }
   }
 
-  // To iterate over LRU with a 'for...of' loop
+  /**
+   * To iterate over LRU with a 'for...of' loop
+   */
   *[Symbol.iterator]() {
     let entry = this.head;
     while (entry) {
