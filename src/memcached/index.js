@@ -72,7 +72,29 @@ class Memcached {
           return REPLY_NOT_STORED;
         }
       case 'append':
+        if (
+          this.append(parsedObject.key, parsedObject.data, parsedObject.bytes)
+        ) {
+          if (parsedObject.noReply) {
+            return false;
+          } else {
+            return REPLY_STORED;
+          }
+        } else {
+          return REPLY_NOT_FOUND;
+        }
       case 'prepend':
+        if (
+          this.prepend(parsedObject.key, parsedObject.data, parsedObject.bytes)
+        ) {
+          if (parsedObject.noReply) {
+            return false;
+          } else {
+            return REPLY_STORED;
+          }
+        } else {
+          return REPLY_NOT_FOUND;
+        }
       case 'cas':
       case 'get':
       case 'gets':
@@ -89,8 +111,8 @@ class Memcached {
 
   /**
    * Transforms exptime to LRUCache format (ms not seconds)
-   * @param {integer} expTime in seconds
-   * @returns {integer} expTime in ms.
+   * @param {Number} expTime in seconds
+   * @returns {Number} expTime in ms.
    */
   expTimeToMs(expTimeInSeconds) {
     return expTimeInSeconds * 1000;
@@ -101,8 +123,8 @@ class Memcached {
    * @param  {string} key entry's key
    * @param  {string} data entry's main data
    * @param  {float} flags positive number
-   * @param  {integer} bytes data's lenght
-   * @param  {integer} expTime entry's time to live
+   * @param  {Number} bytes data's lenght
+   * @param  {Number} expTime entry's time to live
    */
   set(key, data, flags, bytes, expTime) {
     const dataObject = {
@@ -119,18 +141,18 @@ class Memcached {
    * @param  {string} key entry's key
    * @param  {string} data entry's main data
    * @param  {float} flags positive number
-   * @param  {integer} bytes data's lenght
-   * @param  {integer} expTime entry's time to live
+   * @param  {Number} bytes data's lenght
+   * @param  {Number} expTime entry's time to live
    * @returns {boolean} true if the cache doesn't have data for the given key and it added it correctly, or false if it does.
    */
   add(key, data, flags, bytes, expTime) {
-    const dataObject = {
-      data,
-      flags,
-      bytes,
-      cas: generateUniqueCas(),
-    };
     if (!this.lruCache.has(key)) {
+      const dataObject = {
+        data,
+        flags,
+        bytes,
+        cas: generateUniqueCas(),
+      };
       this.lruCache.addEntry(key, dataObject, expTimeToMs(expTime));
       return true;
     } else {
@@ -143,19 +165,65 @@ class Memcached {
    * @param  {string} key entry's key
    * @param  {string} data entry's main data
    * @param  {float} flags positive number
-   * @param  {integer} bytes data's lenght
-   * @param  {integer} expTime entry's time to live
+   * @param  {Number} bytes data's lenght
+   * @param  {Number} expTime entry's time to live
    * @returns {boolean} true if the cache has data for the given key and it replaced the entry corretly, or false if it doesn't.
    */
   replace(key, data, flags, bytes, expTime) {
-    const dataObject = {
-      data,
-      flags,
-      bytes,
-      cas: generateUniqueCas(),
-    };
     if (this.lruCache.has(key)) {
+      const dataObject = {
+        data,
+        flags,
+        bytes,
+        cas: generateUniqueCas(),
+      };
       this.lruCache.addEntry(key, dataObject, expTimeToMs(expTime));
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Adds data to an existing key after existing data
+   * @param  {string} key entry's key
+   * @param  {string} suffixData suffix to append to the data
+   * @param  {Number} bytes data's lenght
+   * @returns {boolean} true if the cache has data for the given key and it updated it corretly, or false if it doesn't.
+   */
+  append(key, suffixData, bytes) {
+    if (this.lruCache.has(key)) {
+      const actualEntryData = this.lruCache.getEntry(key, true);
+      const newEntryData = {
+        ...actualEntryData,
+        bytes: actualEntryData + bytes,
+        data: actualEntryData.data + suffixData,
+        cas: this.generateUniqueCas(),
+      };
+      this.lruCache.updateEntry(key, newEntryData);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Adds data to an existing key before existing data
+   * @param  {string} key entry's key
+   * @param  {string} prefixData prefix to append to the data
+   * @param  {integer} bytes data's lenght
+   * @returns {boolean} true if the cache has data for the given key and it replaced the entry corretly, or false if it doesn't.
+   */
+  prepend(key, prefixData, bytes) {
+    if (this.lruCache.has(key)) {
+      const actualEntryData = this.lruCache.getEntry(key, true);
+      const newEntryData = {
+        ...actualEntryData,
+        bytes: actualEntryData + bytes,
+        data: prefixData + actualEntryData.data,
+        cas: this.generateUniqueCas(),
+      };
+      this.lruCache.updateEntry(key, newEntryData);
       return true;
     } else {
       return false;

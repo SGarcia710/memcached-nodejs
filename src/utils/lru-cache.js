@@ -33,7 +33,7 @@ class LRU {
 
     this.purgeInterval =
       purgeInterval < Infinity
-        ? setInterval(this.purgeExpiredEntries.bind(this), purgeInterval)
+        ? setInterval(this._purgeExpiredEntries.bind(this), purgeInterval)
         : null;
   }
 
@@ -87,7 +87,7 @@ class LRU {
    * Purges the expired keys in the cache
    * @returns {Array} Array containing the purged keys
    */
-  purgeExpiredEntries() {
+  _purgeExpiredEntries() {
     const now = this.now();
     let keys = new Set();
 
@@ -111,36 +111,49 @@ class LRU {
   /**
    * Gets entry from cache map and update with that entry the head of the Doubly LinkedList
    * @param {string} key supposed key to fetch
-   * @returns {object|integer} object with the item's value or -1 if it doesnt exist or its expired on the cache
+   * @param {boolean} noUpdate true to indicate the cache to dont move this entry to the head of the doubly linked list
+   * @returns {object|boolean} object with the item's value or false if it doesnt exist or its expired on the cache
    */
-  getEntry(key) {
+  getEntry(key, noUpdate) {
     if (this.cache.has(key) && this.check(key)) {
       const entry = this.cache.get(key);
-      // Entry removed from it's position and cache
-      this.removeEntry(entry);
-      // Move entry to the head of Doubly LinkedList to make it MRU
-      this.addEntryToTop(entry);
+      if (!noUpdate) {
+        // This is a normal getEntry
+        // Entry gets removed from it's position and cache
+        this.removeEntry(entry);
+        // And its moved to the head of Doubly Linked List to make it MRU
+        this.addEntryToTop(entry);
+      }
 
       return entry.value;
     }
 
     // The entry key doesn't exist or its expired on the cache.
-    return -1;
+    return false;
   }
 
   /**
-   * Add a new entry to the cache
+   * Updates the value for an existing entry in the cache, and move it to top
    * @param {string} key entry's key
    * @param {any} value entry's value
+   */
+  updateEntry(key, value) {
+    let entry = this.cache.get(key);
+    entry.value = value;
+    this.removeEntry(entry);
+    this.addEntryToTop(entry);
+  }
+
+  /**
+   * Add a new entry to the cache or updates it if it already exists (included the expiration time)
+   * @param {string} key entry's key
+   * @param {Object} value entry's value
    * @param {string} entryTTL entry's time to live
    */
   addEntry(key, value, entryTTL) {
     if (this.cache.has(key)) {
       // If they key already exist, just update the value and move it to top
-      let entry = this.cache.get(key);
-      entry.value = value;
-      this.removeEntry(entry);
-      this.addEntryToTop(entry);
+      this.updateEntry(key, value);
     } else {
       // If its a new key
       const newEntry = new Node(key, value);
@@ -156,7 +169,7 @@ class LRU {
       // Update the cache map
       this.cache.set(key, newEntry);
     }
-    // create the expiration time
+    // Create or update the expiration time
     this.expires.set(
       key,
       this.now() +

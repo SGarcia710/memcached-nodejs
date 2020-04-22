@@ -72,6 +72,7 @@ TODO
 
 - Memcached's official webpage: [https://memcached.org/](https://memcached.org/)
 - JavaScript documentation style guide: [https://jsdoc.app/](https://jsdoc.app/)
+- JavaScript namin conventions: [https://www.robinwieruch.de/javascript-naming-conventions](https://www.robinwieruch.de/javascript-naming-conventions)
 - LRU Cache: [https://github.com/SGarcia710/lru-cache-js](https://github.com/SGarcia710/lru-cache-js)
 - TCP Server: [https://github.com/SGarcia710/tcp-server-nodejs](https://github.com/SGarcia710/tcp-server-nodejs)
 - The full protocol specification: [https://github.com/memcached/memcached/blob/master/doc/protocol.txt](https://github.com/memcached/memcached/blob/master/doc/protocol.txt)
