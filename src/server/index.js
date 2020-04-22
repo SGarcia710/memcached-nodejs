@@ -3,6 +3,7 @@
 const { Server } = require('net');
 const Memcached = require('../memcached');
 const Parser = require('../utils/parser');
+const { server_error } = require('../assets/config');
 
 class TCPServer extends Server {
   constructor(port) {
@@ -32,12 +33,19 @@ class TCPServer extends Server {
           );
         } catch (error) {
           socket.write(error.message);
+          socket.end();
         }
+
+        const serverResponse = this.memcached.handleOperation(parsedObject);
+        if (serverResponse) {
+          socket.write(serverResponse);
+        }
+
         socket.end();
       });
 
       socket.on('error', (err) => {
-        console.log(`Error: ${err}`);
+        // socket.write(server_error(err.message));
       });
     });
   }

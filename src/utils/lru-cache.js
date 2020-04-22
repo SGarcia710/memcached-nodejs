@@ -70,6 +70,7 @@ class LRU {
    * @returns {boolean} True if this item exists and its valid or false if its not
    */
   has(key) {
+    // If a key its already expired, it can be safely replaced/updated, because it will be purged anyways.
     return this.cache.has(key) && this.expires.get(key) > this.now();
   }
 
@@ -207,20 +208,20 @@ class LRU {
     this.expires.clear();
   }
 
-  /**
-   * TODO
-   * Invokes the callback function with each element on the cache
-   * @param {Function} callback to excecute
-   */
-  forEach(callback) {
-    let entry = this.start;
-    let counter = 0;
-    while (entry) {
-      callback(entry, counter);
-      entry = entry.right;
-      counter++;
-    }
-  }
+  // /**
+  //  * TODO
+  //  * Invokes the callback function with each element on the cache
+  //  * @param {Function} callback to excecute
+  //  */
+  // forEach(callback) {
+  //   let entry = this.start;
+  //   let counter = 0;
+  //   while (entry) {
+  //     callback(entry, counter);
+  //     entry = entry.right;
+  //     counter++;
+  //   }
+  // }
 
   /**
    * To iterate over LRU with a 'for...of' loop

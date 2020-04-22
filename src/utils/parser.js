@@ -4,7 +4,7 @@ const {
   KEY_LENGHT,
   VALID_OPERATIONS,
   INVALID_COMMAND,
-  server_error,
+  client_error,
 } = require('../assets/config');
 /* 
   Usage cases:
@@ -30,14 +30,14 @@ class Parser {
           try {
             return this.checkRetrievalOperationInput(operation, input);
           } catch (error) {
-            throw new Error(server_error(error.message));
+            throw new Error(client_error(error.message));
           }
         default:
           // Storage operation
           try {
             return this.checkStorageOperationInput(operation, input);
           } catch (error) {
-            throw new Error(server_error(error.message));
+            throw new Error(client_error(error.message));
           }
       }
     } else {
@@ -252,7 +252,7 @@ class Parser {
    * @returns {boolean|Error} True if the number passes the check, if it doesn't, Error
    */
   areFlagsValid(flags) {
-    const parsedFlags = parseInt(flags);
+    const parsedFlags = parseFloat(flags);
     if (!Number.isNaN(parsedFlags)) {
       if (parsedFlags >= 0) {
         return true;
@@ -306,11 +306,15 @@ class Parser {
           parsedObject.casUnique = params[4];
           if (params.length > 5) {
             parsedObject.noReply = true;
+          } else {
+            parsedObject.noReply = false;
           }
           break;
         }
         if (params.length > 4) {
           parsedObject.noReply = true;
+        } else {
+          parsedObject.noReply = false;
         }
         break;
       case 'append':
@@ -320,6 +324,8 @@ class Parser {
         parsedObject.bytes = parseInt(params[1]);
         if (params.length > 2) {
           parsedObject.noReply = true;
+        } else {
+          parsedObject.noReply = false;
         }
         break;
     }
