@@ -32,6 +32,9 @@ const REPLY_NOT_STORED = 'NOT_STORED\r\n';
 const REPLY_EXISTS = 'EXISTS\r\n';
 const REPLY_NOT_FOUND = 'NOT_FOUND\r\n';
 
+// Memcached's retrieval reponse string
+const REPLY_END = 'END\r\n';
+
 module.exports = {
   PORT,
   KEY_LENGHT,
@@ -46,4 +49,5 @@ module.exports = {
   REPLY_NOT_STORED,
   REPLY_EXISTS,
   REPLY_NOT_FOUND,
+  REPLY_END,
 };

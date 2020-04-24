@@ -71,7 +71,10 @@ class LRU {
    */
   has(key) {
     // If a key its already expired, it can be safely replaced/updated, because it will be purged anyways.
-    return this.cache.has(key) && this.expires.get(key) > this.now();
+    return (
+      this.cache.has(key) &&
+      (this.expires.get(key) > this.now() || this.expires.get(key) === 0)
+    );
   }
 
   /**
@@ -80,7 +83,7 @@ class LRU {
    * @returns {boolean} True if this item its valid or false if its not
    */
   check(key) {
-    return this.expires.get(key) > this.now();
+    return this.expires.get(key) > this.now() || this.expires.get(key) === 0;
   }
 
   /**
@@ -91,9 +94,9 @@ class LRU {
     const now = this.now();
     let keys = new Set();
 
-    // Getting the Expired's Entries keys
+    // Getting the Expired's Entries keys, ignoring the 0s(infinite ones)
     for (let pair of this.expires) {
-      if (pair[1] <= now) {
+      if (pair[1] <= now && pair[1] !== 0) {
         keys.add(pair[0]);
       }
     }
@@ -112,7 +115,7 @@ class LRU {
    * Gets entry from cache map and update with that entry the head of the Doubly LinkedList
    * @param {string} key supposed key to fetch
    * @param {boolean} noUpdate true to indicate the cache to dont move this entry to the head of the doubly linked list
-   * @returns {object|boolean} object with the item's value or false if it doesnt exist or its expired on the cache
+   * @returns {object|boolean} the found entry's key and value or false if it doesnt exist or its expired on the cache
    */
   getEntry(key, noUpdate) {
     if (this.cache.has(key) && this.check(key)) {
@@ -125,7 +128,7 @@ class LRU {
         this.addEntryToTop(entry);
       }
 
-      return entry.value;
+      return { key: entry.key, value: entry.value };
     }
 
     // The entry key doesn't exist or its expired on the cache.
@@ -142,6 +145,22 @@ class LRU {
     entry.value = value;
     this.removeEntry(entry);
     this.addEntryToTop(entry);
+  }
+
+  /** Calculates the TTL for the key with the given TTL
+   * @param {Number} entryTTL the ttl sent by the client
+   * @returns {Number} the calculated ttl
+   */
+  _calculateTTL(entryTTL) {
+    if (entryTTL === 0) {
+      // Infinite entry
+      return 0;
+    } else {
+      return (
+        this.now() +
+        (entryTTL && ms(entryTTL) < this.maxTTL ? ms(entryTTL) : this.maxTTL)
+      );
+    }
   }
 
   /**
@@ -170,11 +189,7 @@ class LRU {
       this.cache.set(key, newEntry);
     }
     // Create or update the expiration time
-    this.expires.set(
-      key,
-      this.now() +
-        (entryTTL && ms(entryTTL) < this.maxTTL ? ms(entryTTL) : this.maxTTL)
-    );
+    this.expires.set(key, this._calculateTTL(entryTTL));
   }
 
   /**

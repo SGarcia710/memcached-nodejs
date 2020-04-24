@@ -31,17 +31,16 @@ class TCPServer extends Server {
           console.log(
             `Data received from client: ${JSON.stringify(parsedObject)}`
           );
+
+          const serverResponse = this.memcached.handleOperation(parsedObject);
+          if (serverResponse) {
+            socket.write(serverResponse);
+          }
+          socket.end();
         } catch (error) {
           socket.write(error.message);
           socket.end();
         }
-
-        const serverResponse = this.memcached.handleOperation(parsedObject);
-        if (serverResponse) {
-          socket.write(serverResponse);
-        }
-
-        socket.end();
       });
 
       socket.on('error', (err) => {
