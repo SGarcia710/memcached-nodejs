@@ -16,9 +16,9 @@ class TCPServer extends Server {
 
   _startListening() {
     super.listen(this.port, () => {
-      // console.info(
-      //   `Server listening for connection requests on socket ${this.port}`
-      // );
+      console.info(
+        `Server listening for connection requests on socket ${this.port}`
+      );
     });
 
     super.on('connection', (socket) => {
@@ -28,9 +28,9 @@ class TCPServer extends Server {
       socket.on('data', (chunk) => {
         try {
           const parsedObject = this.parser.parseInput(chunk);
-          // console.log(
-          //   `Data received from client: ${JSON.stringify(parsedObject)}`
-          // );
+          console.log(
+            `Data received from client: ${JSON.stringify(parsedObject)}`
+          );
 
           const serverResponse = this.memcached.handleOperation(parsedObject);
           if (serverResponse) {

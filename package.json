@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "jest --detectOpenHandles --config ./jest.config.json"
+    "test": "jest --config ./jest.config.json"
   },
   "author": "Sebastián García - @SGarcia710",
   "license": "MIT",
