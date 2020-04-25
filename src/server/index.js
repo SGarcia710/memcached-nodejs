@@ -11,14 +11,14 @@ class TCPServer extends Server {
     this.port = port || 8080;
     this.memcached = new Memcached();
     this.parser = new Parser();
-    this.startListening();
+    this._startListening();
   }
 
-  startListening() {
+  _startListening() {
     super.listen(this.port, () => {
-      console.info(
-        `Server listening for connection requests on socket ${this.port}`
-      );
+      // console.info(
+      //   `Server listening for connection requests on socket ${this.port}`
+      // );
     });
 
     super.on('connection', (socket) => {
@@ -28,9 +28,9 @@ class TCPServer extends Server {
       socket.on('data', (chunk) => {
         try {
           const parsedObject = this.parser.parseInput(chunk);
-          console.log(
-            `Data received from client: ${JSON.stringify(parsedObject)}`
-          );
+          // console.log(
+          //   `Data received from client: ${JSON.stringify(parsedObject)}`
+          // );
 
           const serverResponse = this.memcached.handleOperation(parsedObject);
           if (serverResponse) {

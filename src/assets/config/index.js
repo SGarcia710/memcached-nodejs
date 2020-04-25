@@ -4,6 +4,7 @@ require('dotenv').config();
 
 // Server consts
 const PORT = process.env.PORT;
+const HOST = 'localhost';
 // Parser consts
 const KEY_LENGHT = 250;
 const VALID_OPERATIONS = [
@@ -37,6 +38,7 @@ const REPLY_END = 'END\r\n';
 
 module.exports = {
   PORT,
+  HOST,
   KEY_LENGHT,
   VALID_OPERATIONS,
   DEFAULT_MAX_TTL,

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "parser": "node src/utils/parser.js"
+    "test": "jest --detectOpenHandles --config ./jest.config.json"
   },
   "author": "Sebastián García - @SGarcia710",
   "license": "MIT",
@@ -13,5 +13,8 @@
     "dotenv": "8.2.0",
     "ms": "2.1.2",
     "uuid": "7.0.3"
+  },
+  "devDependencies": {
+    "jest": "25.4.0"
   }
 }
