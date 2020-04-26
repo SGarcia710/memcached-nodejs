@@ -3,7 +3,6 @@
 const { Server } = require('net');
 const Memcached = require('../memcached');
 const Parser = require('../utils/parser');
-const { server_error } = require('../assets/config');
 
 class TCPServer extends Server {
   constructor(port) {
@@ -13,7 +12,9 @@ class TCPServer extends Server {
     this.parser = new Parser();
     this._startListening();
   }
-
+  /**
+   * Makes the server starts listeing connections in the given port and receive data from the client
+   */
   _startListening() {
     super.listen(this.port, () => {
       console.info(
@@ -28,9 +29,6 @@ class TCPServer extends Server {
       socket.on('data', (chunk) => {
         try {
           const parsedObject = this.parser.parseInput(chunk);
-          console.log(
-            `Data received from client: ${JSON.stringify(parsedObject)}`
-          );
 
           const serverResponse = this.memcached.handleOperation(parsedObject);
           if (serverResponse) {
@@ -44,7 +42,7 @@ class TCPServer extends Server {
       });
 
       socket.on('error', (err) => {
-        // socket.write(server_error(err.message));
+        console.error(err.message);
       });
     });
   }

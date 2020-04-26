@@ -11,6 +11,9 @@ class TCPClient extends Socket {
     this._startListening();
   }
 
+  /**
+   * Makes the client starts listening data from the server
+   */
   _startListening() {
     this.on('data', (chunk) => {
       console.log(`Data received from the server: ${chunk.toString()}`);
@@ -21,7 +24,10 @@ class TCPClient extends Socket {
       console.log('Requested an end to the TCP connection');
     });
   }
-
+  /**
+   * Lets the client send operations to the server
+   * @param {string} operation string with the operation to send to the server
+   */
   sendOperation(operation) {
     this.write(operation);
   }

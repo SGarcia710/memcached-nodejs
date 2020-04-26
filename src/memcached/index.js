@@ -73,7 +73,6 @@ class Memcached {
           return REPLY_NOT_STORED;
         }
       case 'append':
-        // console.log(parsedObject);
         if (
           this.handleDataConcatenation(
             parsedObject.key,
