@@ -10,42 +10,10 @@ const {
   REPLY_END,
 } = require('../assets/config');
 
-// const mocks = [
-//   {
-//     key: 'key1',
-//     data: 'data1',
-//     flags: 1.2,
-//     bytes: 5,
-//     expTime: 0,
-//   },
-//   {
-//     key: 'key2',
-//     data: 'data2',
-//     flags: 2.2,
-//     bytes: 5,
-//     expTime: 0,
-//   },
-//   {
-//     key: 'key3',
-//     data: 'data3',
-//     flags: 3.2,
-//     bytes: 5,
-//     expTime: 0,
-//   },
-// ];
-
 class Memcached {
   constructor() {
     this.lruCache = new LRU();
-
-    // this._init();
   }
-
-  // _init() {
-  //   for (let e of mocks) {
-  //     this.set(e.key, e.data, e.flags, e.bytes, e.expTime);
-  //   }
-  // }
 
   /**
    * Handles the operation contained in the parsed Object.
@@ -105,6 +73,7 @@ class Memcached {
           return REPLY_NOT_STORED;
         }
       case 'append':
+        // console.log(parsedObject);
         if (
           this.handleDataConcatenation(
             parsedObject.key,
@@ -142,10 +111,10 @@ class Memcached {
         const casAnswer = this.cas(
           parsedObject.key,
           parsedObject.flags,
-          parsedobject.expTime,
+          parsedObject.expTime,
           parsedObject.bytes,
           parsedObject.data,
-          parsedobject.casUnique
+          parsedObject.casUnique
         );
         if (casAnswer === true) {
           if (parsedObject.noReply) {
@@ -255,10 +224,10 @@ class Memcached {
    */
   handleDataConcatenation(key, newData, bytes, isPrepend) {
     if (this.lruCache.has(key)) {
-      const actualEntryData = this.lruCache.getEntry(key, true);
+      const actualEntryData = this.lruCache.getEntry(key, true).value;
       const newEntryData = {
         ...actualEntryData,
-        bytes: actualEntryData + bytes,
+        bytes: actualEntryData.bytes + bytes,
         cas: this._generateUniqueCas(),
       };
       if (isPrepend) {
@@ -285,7 +254,7 @@ class Memcached {
    */
   cas(key, flags, expTime, bytes, data, casUnique) {
     if (this.lruCache.has(key)) {
-      const actualEntryData = this.lruCache.getEntry(key, true);
+      const actualEntryData = this.lruCache.getEntry(key, true).value;
       if (actualEntryData.cas === casUnique) {
         const dataObject = {
           data,
@@ -338,10 +307,11 @@ class Memcached {
         outputString = outputString.concat(
           `VALUE ${entry.key} ${entry.value.flags} ${entry.value.bytes} [${entry.value.cas}]\r\n${entry.value.data}\r\n`
         );
+      } else {
+        outputString = outputString.concat(
+          `VALUE ${entry.key} ${entry.value.flags} ${entry.value.bytes}\r\n${entry.value.data}\r\n`
+        );
       }
-      outputString = outputString.concat(
-        `VALUE ${entry.key} ${entry.value.flags} ${entry.value.bytes}\r\n${entry.value.data}\r\n`
-      );
     }
     outputString = outputString.concat(REPLY_END);
     return outputString;

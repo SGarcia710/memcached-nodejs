@@ -91,7 +91,7 @@ class Parser {
       const keys = splittedInput[1].trim().split(' ');
       return keys;
     }
-    throw new Error('Retrieval commands must be sent with keys');
+    throw new Error('Retrieval commands must be sent with at least one key');
   }
 
   /**
@@ -399,57 +399,3 @@ class Parser {
 }
 
 module.exports = Parser;
-
-// Valid set/add/replace with noreply
-// const setString =
-//   'set myKey 0 2592000 360 [noreply]\r\n{"glossary":{"title":"example glossary","GlossDiv":{"title":"S","GlossList":{"GlossEntry":{"ID":"SGML","SortAs":"SGML","GlossTerm":"Standard Generalized Markup Language","Acronym":"SGML","Abbrev":"ISO 8879:1986","GlossDef":{"para":"A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso":["GML","XML"]},"GlossSee":"markup"}}}}}\r\n';
-
-// Valid set/add/replace without noreply
-// const setString =
-//   'set myKey 0 2592000 360\r\n{"glossary":{"title":"example glossary","GlossDiv":{"title":"S","GlossList":{"GlossEntry":{"ID":"SGML","SortAs":"SGML","GlossTerm":"Standard Generalized Markup Language","Acronym":"SGML","Abbrev":"ISO 8879:1986","GlossDef":{"para":"A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso":["GML","XML"]},"GlossSee":"markup"}}}}}\r\n';
-
-// Valid set/add/replace with noreply and no data
-// const setString = 'set myKey 1.2 0 0 [noreply]\r\n\r\n';
-
-// Valid set/add/replace without noreply and no data
-// const setString = 'set myKey 1.2 0 0\r\n\r\n';
-
-// invalid cas with data and wrong noreply
-// const casString = 'cas key 1.1 1 6 asdas kljasldkj\r\nkajdjk\r\n';
-
-// Valid cas with data and with noreply
-// const casString = 'cas key 1.1 1 6 asdas [noreply]\r\nkajdjk\r\n';
-
-// Valid cas with data and without noreply
-// const casString = 'cas key 1.1 1 6 asdas\r\nkajdjk\r\n';
-
-// Valid prepend/append without noreply
-// const prependString =
-//   'prepend myKey 360\r\n{"glossary":{"title":"example glossary","GlossDiv":{"title":"S","GlossList":{"GlossEntry":{"ID":"SGML","SortAs":"SGML","GlossTerm":"Standard Generalized Markup Language","Acronym":"SGML","Abbrev":"ISO 8879:1986","GlossDef":{"para":"A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso":["GML","XML"]},"GlossSee":"markup"}}}}}\r\n';
-
-// Valid prepend/append with noreply
-// const prependString =
-//   'prepend myKey 360 [noreply]\r\n{"glossary":{"title":"example glossary","GlossDiv":{"title":"S","GlossList":{"GlossEntry":{"ID":"SGML","SortAs":"SGML","GlossTerm":"Standard Generalized Markup Language","Acronym":"SGML","Abbrev":"ISO 8879:1986","GlossDef":{"para":"A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso":["GML","XML"]},"GlossSee":"markup"}}}}}\r\n';
-
-// Valid gets/get
-// const getsString =
-//   'gets key2 thisisanotherbigKey thisIsAkEEYYY_kasda keyToo_big_231_14\r\n';
-
-// invalid gets/get
-// const getsString = 'gets \r\n';
-
-// Invalid key (251)
-// const getString =
-//   'get key2key2key2key2key2key2key2key2key2keya2key2key2key2keykey2key2key2key2key2key2key2key2key2key2key2key2key2key2key2keyasdasdadasdasdasddasdjljqwoidjqiwodalskdjasldjaso1idjqwkdnaslkdjasdiqawjdopqwidjqwpodnmalkjlkasjdlaksjdlasdjiqnwdasdnalskdajsldaisjd thisisanotherbigKey thisIsAkEEYYY_kasda keyToo_big_231_14\r\n';
-
-// valid key with max lenght allowed (250)
-// const getString =
-//   'get key2key2key2key2key2key2key2key2key2keya2key2key2key2keykey2key2key2key2key2key2key2key2key2key2key2key2key2key2key2keyasdasdadasdasdasddasdjljqwoidjqiwodalskdjasldjaso1idjqwkdnaskdjasdiqawjdopqwidjqwpodnmalkjlkasjdlaksjdlasdjiqnwdasdnalskdajsldaisjd thisisanotherbigKey thisIsAkEEYYY_kasda keyToo_big_231_14\r\n';
-
-// const par = new Parser();
-
-// try {
-//   console.log(par.parseInput(getString));
-// } catch (error) {
-//   console.log(error.message);
-// }

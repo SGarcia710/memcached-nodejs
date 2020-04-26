@@ -3,8 +3,8 @@
 require('dotenv').config();
 
 // Server consts
-const PORT = process.env.PORT;
-const HOST = 'localhost';
+const PORT = process.env.SERVER_PORT;
+const HOST = process.env.SERVER_HOST;
 // Parser consts
 const KEY_LENGHT = 250;
 const VALID_OPERATIONS = [

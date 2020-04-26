@@ -27,8 +27,4 @@ class TCPClient extends Socket {
   }
 }
 
-const client = new TCPClient(8080, 'localhost');
-client.sendOperation('set ana 0 0 4 [noreply]\r\ndata\r\n');
-client.sendOperation('set camila 0 0 4 [noreply]\r\ndata\r\n');
-
 module.exports = TCPClient;
