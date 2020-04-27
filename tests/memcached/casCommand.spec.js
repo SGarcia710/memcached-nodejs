@@ -110,7 +110,7 @@ describe('Cas command', () => {
     });
   });
   describe('Cas to an existing key but not matching the casUnique', () => {
-    it('should returns false', () => {
+    it('should returns EXISTS\\r\\n', () => {
       const casResponse = memcached.handleOperation(mocks[3]);
       expect(casResponse).toEqual(REPLY_EXISTS);
     });
