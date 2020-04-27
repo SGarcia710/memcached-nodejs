@@ -88,7 +88,7 @@ class Parser {
     const splitKeysFromOperation = new RegExp(`[^${operation}](.+)`);
     const splittedInput = input.match(splitKeysFromOperation);
     if (splittedInput) {
-      const keys = splittedInput[1].trim().split(' ');
+      const keys = splittedInput[1].trim().split(/\s+/);
       return keys;
     }
     throw new Error('Retrieval commands must be sent with at least one key');
@@ -146,7 +146,7 @@ class Parser {
     const splittedInput = input.match(splitParamsFromData);
 
     if (splittedInput) {
-      const params = splittedInput[1].trim().split(' ');
+      const params = splittedInput[1].trim().split(/\s+/);
 
       const data = splittedInput[2];
       /* If its a set, add or replace operation the params will be: key, flags, exptime, bytes, [noreply] which is optional
